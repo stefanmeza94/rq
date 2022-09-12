@@ -1,25 +1,27 @@
 import { useQuery } from 'react-query';
 import axios from 'axios';
 
-export const RQSuperHeroesPage = () => {
-  const {
-    isLoading,
-    isError,
-    error,
-    data: { data: superheroes },
-  } = useQuery(['super-heroes'], () => {
-    return axios('http://localhost:4000/superheroes');
-  });
+const fetchSuperHeroes = () => {
+  return axios('http://localhost:4000/superheroes');
+}
 
-  console.log(isLoading, isError, error, superheroes);
+export const RQSuperHeroesPage = () => {
+  const { data, isLoading, isError, error } = useQuery(['super-heroes'], fetchSuperHeroes);
+
+  if (isLoading) {
+    return <h2>Loading...</h2>
+  }
+
+  if (isError) {
+    return <h2>Something went wrong. {error.message}</h2>
+  }
 
   return (
     <>
       <div>RQ Super Heroes Page</div>
-      <ul>
-        {superheroes?.map((superhero) => {
-          return <li key={superhero.id}>{superhero.name}</li>;
-        })}
+      <ul>{data?.data.map((superhero) => {
+        return <li key={superhero.id}>{superhero.name}</li>;
+      })}
       </ul>
     </>
   );
